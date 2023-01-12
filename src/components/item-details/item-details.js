@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Spinner from '../spinner';
 
 
 import './item-details.css';
@@ -20,7 +21,8 @@ export default class ItemDetails extends Component {
 
   state = {
     item: null,
-    image: null
+    image: null,
+    loading: false,
   };
 
   componentDidMount() {
@@ -36,6 +38,13 @@ export default class ItemDetails extends Component {
   }
 
   updateItem() {
+    this.setState((prev) => {
+      return {
+        item: prev.item,
+        image: null,
+        loading: true,
+      }
+    });
     const { itemId, getData, getImageUrl } = this.props;
     if (!itemId) {
       return;
@@ -45,16 +54,22 @@ export default class ItemDetails extends Component {
       .then((item) => {
         this.setState({
           item,
-          image: getImageUrl(item)
+          image: getImageUrl(item),
+          loading: false,
         });
       });
   }
 
   render() {
 
-    const { item, image } = this.state;
+    const { item, image, loading } = this.state;
+
+
     if (!item) {
       return <span>Select a item from a list</span>;
+    }
+    if (loading) {
+      return <Spinner />
     }
 
     const { name } = item;
